@@ -6,27 +6,24 @@ export default function AddBookPage() {
   const navigate = useNavigate();
 
   const [addBookForm, setAddBookFrom] = useState({
-    filePath: "",
+    filePath: null,
   });
 
   const changeAddBookForm = (event) => {
-    const { name, value } = event?.target;
-    setAddBookFrom({
-      ...addBookForm,
-      [name]: value,
-    });
+    setAddBookFrom(event.target.files[0])
   };
 
   const handleAddBook = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('filePath', addBookForm);
+    console.log(formData)
     fetch("http://localhost:3000/books/add", {
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
         access_token: localStorage.getItem("access_token"),
       },
-      body: JSON.stringify(addBookForm),
+      body: formData,
     })
       .then(async (response) => {
         if (!response.ok) throw await response.json();
@@ -56,7 +53,6 @@ export default function AddBookPage() {
                     type="file"
                     name="filePath"
                     className="file-input file-input-bordered w-full max-w-xs"
-                    value={addBookForm.filePath}
                     onChange={changeAddBookForm}
                   />
                 </div>
